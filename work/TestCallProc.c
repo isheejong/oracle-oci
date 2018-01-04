@@ -99,6 +99,44 @@ static void dpiSamples__getEnvValue(const char *envName,
 
 
 //-----------------------------------------------------------------------------
+// dpiSamples_getParams()
+//   Get parameters set in the environment. The DPI library will also be
+// initialized if needed.
+//-----------------------------------------------------------------------------
+dpiSampleParams *dpiSamples_getParams(void)
+{
+    dpiErrorInfo errorInfo;
+
+    // DPI_MAJOR_VERSION, DPI_MINOR_VERSION is defined in dpi.h
+
+    if (!gContext) {
+        if (dpiContext_create(DPI_MAJOR_VERSION, DPI_MINOR_VERSION, &gContext,
+                &errorInfo) < 0) {
+            fprintf(stderr, "ERROR: %.*s (%s : %s)\n", errorInfo.messageLength,
+                    errorInfo.message, errorInfo.fnName, errorInfo.action);
+            dpiSamples__fatalError("Cannot create DPI context.");
+        }
+        atexit(dpiSamples__finalize);
+    }
+
+    dpiSamples__getEnvValue("ODPIC_SAMPLES_MAIN_USER", "heejong",
+            &gParams.mainUserName, &gParams.mainUserNameLength, 1);
+    dpiSamples__getEnvValue("ODPIC_SAMPLES_MAIN_PASSWORD", "Welcome1",
+            &gParams.mainPassword, &gParams.mainPasswordLength, 0);
+    dpiSamples__getEnvValue("ODPIC_SAMPLES_PROXY_USER", "odpicdemo_proxy",
+            &gParams.proxyUserName, &gParams.proxyUserNameLength, 1);
+    dpiSamples__getEnvValue("ODPIC_SAMPLES_PROXY_PASSWORD", "welcome",
+            &gParams.proxyPassword, &gParams.proxyPasswordLength, 0);
+    dpiSamples__getEnvValue("ODPIC_SAMPLES_CONNECT_STRING", "PDB1",
+            &gParams.connectString, &gParams.connectStringLength, 0);
+    dpiSamples__getEnvValue("ODPIC_SAMPLES_DIR_NAME", "odpicdemo_dir",
+            &gParams.dirName, &gParams.dirNameLength, 1);
+    gParams.context = gContext;
+
+    return &gParams;
+}
+
+//-----------------------------------------------------------------------------
 // dpiSamples_getConn()
 //   Connect to the database using the supplied parameters. The DPI library
 // will also be initialized, if needed.
@@ -140,43 +178,7 @@ dpiConn *dpiSamples_getConn(int withPool, dpiCommonCreateParams *commonParams)
 }
 
 
-//-----------------------------------------------------------------------------
-// dpiSamples_getParams()
-//   Get parameters set in the environment. The DPI library will also be
-// initialized if needed.
-//-----------------------------------------------------------------------------
-dpiSampleParams *dpiSamples_getParams(void)
-{
-    dpiErrorInfo errorInfo;
 
-    // DPI_MAJOR_VERSION, DPI_MINOR_VERSION is defined in dpi.h
-
-    if (!gContext) {
-        if (dpiContext_create(DPI_MAJOR_VERSION, DPI_MINOR_VERSION, &gContext,
-                &errorInfo) < 0) {
-            fprintf(stderr, "ERROR: %.*s (%s : %s)\n", errorInfo.messageLength,
-                    errorInfo.message, errorInfo.fnName, errorInfo.action);
-            dpiSamples__fatalError("Cannot create DPI context.");
-        }
-        atexit(dpiSamples__finalize);
-    }
-
-    dpiSamples__getEnvValue("ODPIC_SAMPLES_MAIN_USER", "heejong",
-            &gParams.mainUserName, &gParams.mainUserNameLength, 1);
-    dpiSamples__getEnvValue("ODPIC_SAMPLES_MAIN_PASSWORD", "Welcome1",
-            &gParams.mainPassword, &gParams.mainPasswordLength, 0);
-    dpiSamples__getEnvValue("ODPIC_SAMPLES_PROXY_USER", "odpicdemo_proxy",
-            &gParams.proxyUserName, &gParams.proxyUserNameLength, 1);
-    dpiSamples__getEnvValue("ODPIC_SAMPLES_PROXY_PASSWORD", "welcome",
-            &gParams.proxyPassword, &gParams.proxyPasswordLength, 0);
-    dpiSamples__getEnvValue("ODPIC_SAMPLES_CONNECT_STRING", "PDB1",
-            &gParams.connectString, &gParams.connectStringLength, 0);
-    dpiSamples__getEnvValue("ODPIC_SAMPLES_DIR_NAME", "odpicdemo_dir",
-            &gParams.dirName, &gParams.dirNameLength, 1);
-    gParams.context = gContext;
-
-    return &gParams;
-}
 
 
 //-----------------------------------------------------------------------------
