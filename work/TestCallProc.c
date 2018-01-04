@@ -13,8 +13,35 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define SQL_TEXT        "begin proc_Test(:1, :2, :3); end;"
+#ifdef _MSC_VER
+#if _MSC_VER < 1900
+#define PRId64                  "I64d"
+#define PRIu64                  "I64u"
+#endif
+#endif
 
+#ifndef PRIu64
+#include <inttypes.h>
+#endif
+
+typedef struct {
+    const char *mainUserName;
+    uint32_t mainUserNameLength;
+    const char *mainPassword;
+    uint32_t mainPasswordLength;
+    const char *proxyUserName;
+    uint32_t proxyUserNameLength;
+    const char *proxyPassword;
+    uint32_t proxyPasswordLength;
+    const char *connectString;
+    uint32_t connectStringLength;
+    const char *dirName;
+    uint32_t dirNameLength;
+    dpiContext *context;
+} dpiSampleParams;
+
+
+#define SQL_TEXT        "begin proc_Test(:1, :2, :3); end;"
 static dpiContext *gContext = NULL;
 static dpiSampleParams gParams;
 
