@@ -69,6 +69,21 @@ static void dpiSamples__finalize(void)
 
 
 //-----------------------------------------------------------------------------
+// dpiSamples_showError()
+//   Display the error to stderr.
+//-----------------------------------------------------------------------------
+int dpiSamples_showError(void)
+{
+    dpiErrorInfo info;
+
+    dpiContext_getError(gContext, &info);
+    fprintf(stderr, "ERROR: %.*s (%s: %s)\n", info.messageLength, info.message,
+            info.fnName, info.action);
+    return -1;
+}
+
+
+//-----------------------------------------------------------------------------
 // dpiSamples__getEnvValue()
 //   Get parameter value from the environment or use supplied default value if
 // the value is not set in the environment. Memory is allocated to accommodate
@@ -178,22 +193,6 @@ dpiConn *dpiSamples_getConn(int withPool, dpiCommonCreateParams *commonParams)
 }
 
 
-
-
-
-//-----------------------------------------------------------------------------
-// dpiSamples_showError()
-//   Display the error to stderr.
-//-----------------------------------------------------------------------------
-int dpiSamples_showError(void)
-{
-    dpiErrorInfo info;
-
-    dpiContext_getError(gContext, &info);
-    fprintf(stderr, "ERROR: %.*s (%s: %s)\n", info.messageLength, info.message,
-            info.fnName, info.action);
-    return -1;
-}
 
 int main(int argc, char **argv)
 {
